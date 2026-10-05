@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:supabase_practice/app/app.bottomsheets.dart';
 import 'package:supabase_practice/app/app.dialogs.dart';
@@ -9,9 +10,10 @@ import 'package:stacked_services/stacked_services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: '.env');
   await Supabase.initialize(
-    url: 'https://mrhltrijftbmbbauzosv.supabase.co',
-    publishableKey: 'sb_publishable_8OvRxUMgcGfA7TaeM81YUQ_zXDdLuiB',
+    url: dotenv.env['SUPABASE_URL']!,
+    publishableKey: dotenv.env['SUPABASE_PUBLISHABLE_KEY']!,
   );
   await setupLocator();
   setupDialogUi();

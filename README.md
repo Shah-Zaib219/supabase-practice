@@ -70,20 +70,44 @@ create table public.lists (
 
 ### Flutter setup
 
-Add the package:
+Add the packages:
 
 ```bash
-flutter pub add supabase_flutter
+flutter pub add supabase_flutter flutter_dotenv
 ```
 
-Initialize Supabase in `main.dart` **after** `WidgetsFlutterBinding.ensureInitialized()`:
+#### Keys in a `.env` file
+
+The Supabase keys are kept in a `.env` file instead of the code. `.env` is listed in `.gitignore`, so it is **not** in this repo. Copy the template and fill in your own values:
+
+```bash
+cp .env.example .env
+```
+
+```env
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_PUBLISHABLE_KEY=your-publishable-key
+```
+
+Register `.env` as an asset in `pubspec.yaml` so Flutter can load it:
+
+```yaml
+flutter:
+  assets:
+    - .env
+```
+
+#### Initialize Supabase
+
+In `main.dart`, load `.env` and then initialize Supabase, both **after** `WidgetsFlutterBinding.ensureInitialized()`:
 
 ```dart
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: '.env');
   await Supabase.initialize(
-    url: 'https://<your-project>.supabase.co',
-    publishableKey: '<your-publishable-key>',
+    url: dotenv.env['SUPABASE_URL']!,
+    publishableKey: dotenv.env['SUPABASE_PUBLISHABLE_KEY']!,
   );
   await setupLocator();
   setupDialogUi();
@@ -196,6 +220,7 @@ await supabase.from('lists').delete().eq('id', item['id']);
 ## Running the app
 
 ```bash
+cp .env.example .env   # then add your keys
 flutter pub get
 flutter run
 ```
